@@ -13,7 +13,7 @@ MINIO_TARGET=${MINIO_TARGET:-my-minio-local}
 TEMPLPATH1="${BASEDIR}/user-bucket-policy-_USER_ID_.json"
 
 ## check the .mc/config file.
-if test ! -f ~/.mc/config.json || test $(grep "${MINIO_TARGET}" ~/.mc/config.json >/dev/null) == "1" ; then
+if test ! -f ~/.mc/config.json || test "$(grep ${MINIO_TARGET} ~/.mc/config.json >/dev/null)" == "1" ; then
   echo "Usage: Please setup the ~/.mc/config file, using the following command line."
   echo "  ./mc config host add my-minio-local http://my-minio.minio:9000 <root-access-key> <root-password> --api S3v4"
 fi
