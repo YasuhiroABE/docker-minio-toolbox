@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-toolbox
+  labels:
+    app: minio-toolbox
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minio-toolbox
+  template:
+    metadata:
+      labels:
+        app: minio-toolbox
+    spec:
+      containers:
+      - name: minio-toolbox
+        image: yasuhiroabe/minio-toolbox:1.0.5
+        command: ["sh","-c", "tail -f /dev/null"]
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: data
+          mountPath: /root
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc

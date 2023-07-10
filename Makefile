@@ -1,7 +1,7 @@
 
 NAME = minio-toolbox
 DOCKER_IMAGE = minio-toolbox
-DOCKER_IMAGE_VERSION = 1.0.4
+DOCKER_IMAGE_VERSION = 1.0.5
 
 IMAGE_NAME = $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
 
@@ -47,4 +47,4 @@ check:
 	sudo docker images $(PROD_IMAGE_NAME)
 
 clean:
-	find . -name '*~' -type f -exec rm {} \; -print
+	sudo find . -name '*~' -type f -exec rm {} \; -print
