@@ -1,4 +1,7 @@
 
+DOCKER_CMD = sudo docker
+DOCKER_BUILDER = mabuilder
+
 NAME = minio-toolbox
 DOCKER_IMAGE = minio-toolbox
 DOCKER_IMAGE_VERSION = 1.0.5
@@ -16,35 +19,48 @@ all:
 	@echo "please specify a target: make [build|build-prod|push|run|stop|check]"
 
 build:
-	sudo docker build . --tag $(DOCKER_IMAGE)
+	$(DOCKER_CMD) build . --tag $(DOCKER_IMAGE)
 
 build-prod:
-	sudo docker build . --tag $(IMAGE_NAME) --no-cache
+	$(DOCKER_CMD) build . --tag $(IMAGE_NAME) --no-cache
 
 tag:
-	sudo docker tag $(IMAGE_NAME) $(PROD_IMAGE_NAME)
+	$(DOCKER_CMD) tag $(IMAGE_NAME) $(PROD_IMAGE_NAME)
 
 push:
-	sudo docker push $(PROD_IMAGE_NAME)
+	$(DOCKER_CMD) push $(PROD_IMAGE_NAME)
 
 run:
-	sudo docker run -it --rm -d \
+	$(DOCKER_CMD) run -it --rm -d \
 		-v `pwd`/data:/root \
 		--name $(NAME) \
                 $(DOCKER_IMAGE)
 
 exec:
-	sudo docker exec -it $(NAME) sh
+	$(DOCKER_CMD) exec -it $(NAME) sh
 
 stop:
-	sudo docker stop $(NAME)
+	$(DOCKER_CMD) stop $(NAME)
 
 check:
-	sudo docker ps -f name=$(NAME)
+	$(DOCKER_CMD) ps -f name=$(NAME)
 	@echo
-	sudo docker images $(IMAGE_NAME)
+	$(DOCKER_CMD) images $(IMAGE_NAME)
 	@echo
-	sudo docker images $(PROD_IMAGE_NAME)
+	$(DOCKER_CMD) images $(PROD_IMAGE_NAME)
 
 clean:
 	sudo find . -name '*~' -type f -exec rm {} \; -print
+
+.PHONY: docker-buildx-init
+docker-buildx-init:
+	$(DOCKER_CMD) buildx create --name $(DOCKER_BUILDER) --use
+
+.PHONY: docker-buildx-setup
+docker-buildx-setup:
+	$(DOCKER_CMD) buildx use $(DOCKER_BUILDER)
+	$(DOCKER_CMD) buildx inspect --bootstrap
+
+.PHONY: docker-buildx-prod
+docker-buildx-prod:
+	$(DOCKER_CMD) buildx build --platform linux/amd64,linux/arm64 --tag $(PROD_IMAGE_NAME) --no-cache --push .
