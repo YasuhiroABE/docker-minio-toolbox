@@ -4,7 +4,7 @@ DOCKER_BUILDER = mabuilder
 
 NAME = minio-toolbox
 DOCKER_IMAGE = minio-toolbox
-DOCKER_IMAGE_VERSION = 1.0.5
+DOCKER_IMAGE_VERSION = 1.0.6
 
 IMAGE_NAME = $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
 
@@ -13,35 +13,43 @@ REGISTRY_LIBRARY = yasuhiroabe
 
 PROD_IMAGE_NAME = $(REGISTRY_SERVER)/$(REGISTRY_LIBRARY)/$(IMAGE_NAME)
 
-.PHONY: all build build-prod tag push run stop check
 
+.PHONY: all
 all:
 	@echo "please specify a target: make [build|build-prod|push|run|stop|check]"
 
+.PHONY: build
 build:
 	$(DOCKER_CMD) build . --tag $(DOCKER_IMAGE)
 
+.PHONY: build-prod
 build-prod:
 	$(DOCKER_CMD) build . --tag $(IMAGE_NAME) --no-cache
 
+.PHONY: tag
 tag:
 	$(DOCKER_CMD) tag $(IMAGE_NAME) $(PROD_IMAGE_NAME)
 
+.PHONY: push
 push:
 	$(DOCKER_CMD) push $(PROD_IMAGE_NAME)
 
+.PHONY: run
 run:
 	$(DOCKER_CMD) run -it --rm -d \
 		-v `pwd`/data:/root \
 		--name $(NAME) \
                 $(DOCKER_IMAGE)
 
+.PHONY: exec
 exec:
 	$(DOCKER_CMD) exec -it $(NAME) sh
 
+.PHONY: stop
 stop:
 	$(DOCKER_CMD) stop $(NAME)
 
+.PHONY: check
 check:
 	$(DOCKER_CMD) ps -f name=$(NAME)
 	@echo
@@ -49,6 +57,7 @@ check:
 	@echo
 	$(DOCKER_CMD) images $(PROD_IMAGE_NAME)
 
+.PHONY: clean
 clean:
 	sudo find . -name '*~' -type f -exec rm {} \; -print
 
