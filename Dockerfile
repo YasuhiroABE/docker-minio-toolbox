@@ -3,7 +3,7 @@ FROM alpine:3.18.4
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN apk add --no-cache tzdata bash ca-certificates busybox openssl git
+RUN apk add --no-cache tzdata bash ca-certificates wget
 
 ## Download the "mc" command
 RUN wget -O /usr/bin/mc https://dl.min.io/client/mc/release/${TARGETOS:-linux}-${TARGETARCH:-amd64}/mc
